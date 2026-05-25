@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A premium real-time dashboard for tracking team availability and status.">
+    <title>Team Pulse | Availability Tracker</title>
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Dashboard Sidebar / Navigation -->
+        <aside class="dashboard-sidebar">
+            <div class="brand-section">
+                <div class="brand-logo">
+                    <i data-lucide="activity" class="pulse-icon"></i>
+                </div>
+                <div>
+                    <h1 class="brand-title">TeamPulse</h1>
+                    <span class="brand-subtitle">Availability Tracker</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" id="btn-add-member-sidebar">
+                    <i data-lucide="user-plus"></i>
+                    <span>Add Member</span>
+                </a>
+            </nav>
+
+            <!-- Sidebar Activity Log -->
+            <div class="sidebar-activity-section">
+                <div class="activity-header">
+                    <h3>Recent Activity</h3>
+                    <i data-lucide="history" class="small-icon"></i>
+                </div>
+                <div class="activity-list" id="activity-log-container">
+                    <!-- Dynamic logs render here -->
+                    <div class="log-placeholder">Loading activities...</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header containing stats -->
+            <header class="content-header">
+                <div class="header-text">
+                    <h2>Availability Dashboard</h2>
+                    <p class="current-date" id="current-date">Monday, May 25, 2026</p>
+                </div>
+                
+                <!-- Quick Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper blue">
+                            <i data-lucide="users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Team</span>
+                            <span class="stat-value" id="stat-total">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper green">
+                            <i data-lucide="check-circle-2"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Available Now</span>
+                            <span class="stat-value" id="stat-available">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper red">
+                            <i data-lucide="x-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Unavailable</span>
+                            <span class="stat-value" id="stat-unavailable">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper orange">
+                            <i data-lucide="percent"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Availability</span>
+                            <span class="stat-value" id="stat-percentage">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Toolbar / Controls -->
+            <section class="controls-bar">
+                <div class="search-box">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" id="search-input" placeholder="Search team members by name or role...">
+                </div>
+                <div class="filters-wrapper">
+                    <div class="select-wrapper">
+                        <i data-lucide="filter" class="filter-icon"></i>
+                        <select id="department-filter">
+                            <option value="all">All Departments</option>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Product & Design">Product & Design</option>
+                            <option value="QA">QA</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="btn-add-member">
+                        <i data-lucide="plus"></i>
+                        <span>Add Member</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Team Members Card Grid -->
+            <section class="team-grid-container">
+                <div class="team-grid" id="team-grid">
+                    <!-- Dynamic cards render here -->
+                    <div class="grid-loading">
+                        <div class="spinner"></div>
+                        <p>Fetching team availability...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add Member Dialog Modal -->
+    <div class="modal-overlay" id="add-member-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Add Team Member</h3>
+                <button class="btn-close" id="modal-close-btn">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="add-member-form">
+                <div class="form-group">
+                    <label for="member-name">Full Name</label>
+                    <input type="text" id="member-name" required placeholder="e.g. Sarah Connor" maxlength="40">
+                </div>
+                <div class="form-group">
+                    <label for="member-role">Role / Title</label>
+                    <input type="text" id="member-role" required placeholder="e.g. Senior Frontend Architect" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="member-dept">Department</label>
+                    <select id="member-dept" required>
+                        <option value="" disabled selected>Select department</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Product & Design">Product & Design</option>
+                        <option value="QA">QA</option>
+                        <option value="Management">Management</option>
+                        <option value="Marketing">Marketing</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Profile Avatar Color</label>
+                    <div class="color-picker-grid">
+                        <label class="color-swatch-wrapper">
+                            <input type="radio" name="avatar-color" value="hsl(14, 88%, 62%)" checked>
+                            <span class="color-swatch" style="background-color: hsl(14, 88%, 62%);"></span>
+                        </label>
+                        <label class="color-swatch-wrapper">
+                            <input type="radio" name="avatar-color" value="hsl(168, 76%, 42%)">
+                            <span class="color-swatch" style="background-color: hsl(168, 76%, 42%);"></span>
+                        </label>
+                        <label class="color-swatch-wrapper">
+                            <input type="radio" name="avatar-color" value="hsl(283, 62%, 58%)">
+                            <span class="color-swatch" style="background-color: hsl(283, 62%, 58%);"></span>
+                        </label>
+                        <label class="color-swatch-wrapper">
+                            <input type="radio" name="avatar-color" value="hsl(43, 96%, 56%)">
+                            <span class="color-swatch" style="background-color: hsl(43, 96%, 56%);"></span>
+                        </label>
+                        <label class="color-swatch-wrapper">
+                            <input type="radio" name="avatar-color" value="hsl(204, 76%, 50%)">
+                            <span class="color-swatch" style="background-color: hsl(204, 76%, 50%);"></span>
+                        </label>
+                        <label class="color-swatch-wrapper">
+                            <input type="radio" name="avatar-color" value="hsl(340, 82%, 58%)">
+                            <span class="color-swatch" style="background-color: hsl(340, 82%, 58%);"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i data-lucide="user-plus"></i> Add Member
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast System -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Application Script -->
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
