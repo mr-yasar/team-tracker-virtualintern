@@ -44,6 +44,7 @@ If you want to contribute to this repository, use a simple one-change-per-commit
 Contribution ideas:
 - Fix bugs and improve core tracker behavior.
 - Add new features or extend existing functionality.
+- Improve UI design, styling, or user experience.
 
 1. Create a new branch:
    ```powershell
