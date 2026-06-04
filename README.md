@@ -41,6 +41,9 @@ Users can:
 ## Contributing
 If you want to contribute to this repository, use a simple one-change-per-commit workflow:
 
+Contribution ideas:
+- Fix bugs and improve core tracker behavior.
+
 1. Create a new branch:
    ```powershell
    git checkout -b feature/<short-description>
