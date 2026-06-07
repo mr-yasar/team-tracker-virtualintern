@@ -523,6 +523,18 @@ body {
     background: linear-gradient(135deg, #7c3aed 0%, var(--accent-primary) 100%);
 }
 
+.btn:focus-visible {
+    outline: 2px solid rgba(99, 102, 241, 0.95);
+    outline-offset: 3px;
+}
+
+.btn-secondary:focus-visible,
+.btn-primary:focus-visible,
+.btn-danger:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    outline-offset: 3px;
+}
+
 .btn-primary:active {
     transform: translateY(1px);
 }
