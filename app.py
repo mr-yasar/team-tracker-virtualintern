@@ -197,6 +197,72 @@ def toggle_availability(member_id):
     }
     return jsonify(updated_member)
 
+@app.route('/api/members/<int:member_id>', methods=['PUT'])
+def edit_member(member_id):
+    data = request.get_json() or {}
+    name = data.get('name', '').strip()
+    role = data.get('role', '').strip()
+    department = data.get('department', '').strip()
+    avatar_color = data.get('avatar_color', '').strip()
+
+    if not name or not role or not department:
+        return jsonify({'error': 'Name, Role, and Department are required.'}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM team_members WHERE id = ?', (member_id,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        return jsonify({'error': 'Member not found'}), 404
+
+    effective_color = avatar_color if avatar_color else row['avatar_color']
+    cursor.execute('''
+        UPDATE team_members
+        SET name = ?, role = ?, department = ?, avatar_color = ?, last_updated = datetime('now', 'localtime')
+        WHERE id = ?
+    ''', (name, role, department, effective_color, member_id))
+
+    cursor.execute('''
+        INSERT INTO activity_logs (member_id, member_name, action, timestamp)
+        VALUES (?, ?, 'profile updated', datetime('now', 'localtime'))
+    ''', (member_id, name))
+    conn.commit()
+
+    cursor.execute('SELECT * FROM team_members WHERE id = ?', (member_id,))
+    updated_row = cursor.fetchone()
+    conn.close()
+
+    updated_member = {
+        'id': updated_row['id'],
+        'name': updated_row['name'],
+        'role': updated_row['role'],
+        'department': updated_row['department'],
+        'avatar_color': updated_row['avatar_color'],
+        'is_available': bool(updated_row['is_available']),
+        'last_updated': updated_row['last_updated']
+    }
+    return jsonify(updated_member)
+
+@app.route('/api/members/<int:member_id>', methods=['DELETE'])
+def delete_member(member_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM team_members WHERE id = ?', (member_id,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        return jsonify({'error': 'Member not found'}), 404
+
+    cursor.execute('DELETE FROM team_members WHERE id = ?', (member_id,))
+    cursor.execute('''
+        INSERT INTO activity_logs (member_id, member_name, action, timestamp)
+        VALUES (?, ?, 'removed from team', datetime('now', 'localtime'))
+    ''', (member_id, row['name']))
+    conn.commit()
+    conn.close()
+    return jsonify({'message': 'Member deleted'})
+
 @app.route('/api/logs', methods=['GET'])
 def get_logs():
     conn = get_db_connection()

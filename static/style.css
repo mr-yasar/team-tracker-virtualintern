@@ -786,6 +786,36 @@ input:checked + .slider:before {
     margin-top: 0.5rem;
 }
 
+.card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.85rem 0 0.75rem;
+}
+
+.btn-card {
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
+    min-width: 90px;
+    white-space: nowrap;
+}
+
+.btn-card i {
+    width: 16px;
+    height: 16px;
+}
+
+.btn-danger {
+    background: rgba(244, 63, 94, 0.12);
+    color: #fda4af;
+    border: 1px solid rgba(244, 63, 94, 0.25);
+}
+
+.btn-danger:hover {
+    background: rgba(244, 63, 94, 0.18);
+    color: white;
+}
+
 .status-text {
     font-size: 0.8rem;
     font-weight: 600;
