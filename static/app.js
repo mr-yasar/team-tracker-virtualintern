@@ -15,6 +15,9 @@ const modalCancelBtn = document.getElementById('modal-cancel-btn');
 const addMemberForm = document.getElementById('add-member-form');
 const toastContainer = document.getElementById('toast-container');
 const currentDateElement = document.getElementById('current-date');
+let editingMemberId = null;
+const modalTitle = document.querySelector('#add-member-modal .modal-header h3');
+const modalSubmitButton = addMemberForm.querySelector('button[type="submit"]');
 
 // Stats Elements
 const statTotal = document.getElementById('stat-total');
@@ -102,7 +105,35 @@ function setupEventListeners() {
 }
 
 // Open modal logic
-function openModal() {
+function setModalMode(isEdit) {
+    modalTitle.textContent = isEdit ? 'Edit Team Member' : 'Add Team Member';
+    modalSubmitButton.innerHTML = isEdit
+        ? `<i data-lucide="edit-2"></i> Save Changes`
+        : `<i data-lucide="user-plus"></i> Add Member`;
+    lucide.createIcons();
+}
+
+function selectAvatarColor(color) {
+    const radio = document.querySelector(`input[name="avatar-color"][value="${color}"]`);
+    if (radio) {
+        radio.checked = true;
+    }
+}
+
+function openModal(member = null) {
+    if (member) {
+        editingMemberId = member.id;
+        document.getElementById('member-name').value = member.name;
+        document.getElementById('member-role').value = member.role;
+        document.getElementById('member-dept').value = member.department;
+        selectAvatarColor(member.avatar_color);
+        setModalMode(true);
+    } else {
+        editingMemberId = null;
+        addMemberForm.reset();
+        setModalMode(false);
+    }
+
     addMemberModal.classList.add('open');
     document.getElementById('member-name').focus();
 }
@@ -111,6 +142,8 @@ function openModal() {
 function closeModal() {
     addMemberModal.classList.remove('open');
     addMemberForm.reset();
+    editingMemberId = null;
+    setModalMode(false);
 }
 
 // Search and filter coordination
@@ -207,6 +240,16 @@ function renderMembers(members) {
                 <div class="member-role">${escapeHTML(member.role)}</div>
                 <span class="department-badge">${escapeHTML(member.department)}</span>
             </div>
+            <div class="card-actions">
+                <button class="btn btn-secondary btn-card btn-edit" type="button">
+                    <i data-lucide="edit-2"></i>
+                    Edit
+                </button>
+                <button class="btn btn-danger btn-card btn-delete" type="button">
+                    <i data-lucide="trash-2"></i>
+                    Delete
+                </button>
+            </div>
             <div class="member-footer">
                 <span class="status-text">${member.is_available ? 'Available' : 'Unavailable'}</span>
                 <span class="update-time" title="Last updated time">
@@ -215,8 +258,11 @@ function renderMembers(members) {
                 </span>
             </div>
         `;
-        
+
         teamGrid.appendChild(card);
+
+        card.querySelector('.btn-edit').addEventListener('click', () => openModal(member));
+        card.querySelector('.btn-delete').addEventListener('click', () => confirmDeleteMember(member.id, member.name));
     });
 
     lucide.createIcons();
@@ -384,7 +430,36 @@ async function handleAddMemberSubmit(event) {
         await fetchLogs();
         
     } catch (error) {
-        showToast(error.message || 'Error adding team member', 'error');
+        showToast(error.message || 'Error saving team member', 'error');
+        console.error(error);
+    }
+}
+
+function confirmDeleteMember(memberId, memberName) {
+    const confirmed = window.confirm(`Remove ${memberName} from the team? This cannot be undone.`);
+    if (!confirmed) return;
+    handleDeleteMember(memberId);
+}
+
+async function handleDeleteMember(memberId) {
+    try {
+        const response = await fetch(`/api/members/${memberId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(errData.error || 'Failed to delete member');
+        }
+
+        teamMembers = teamMembers.filter(member => member.id !== memberId);
+        calculateStats();
+        filterAndRender();
+        showToast('Team member removed successfully.', 'success');
+        await fetchLogs();
+    } catch (error) {
+        showToast(error.message || 'Error deleting team member', 'error');
         console.error(error);
     }
 }

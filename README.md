@@ -39,22 +39,24 @@ Users can:
 - The UI loads team members from the backend and updates availability with AJAX calls.
 
 ## Contributing
-If you want to contribute to this repository, use a simple one-change-per-commit workflow:
+You can make five separate contributions to this repository by creating five focused pull requests. Keep each contribution small and easy to review.
 
 Contribution ideas:
-- Fix bugs and improve core tracker behavior.
-- Add new features or extend existing functionality.
-- Improve UI design, styling, or user experience.
-- Update documentation, README, or usage instructions.
+1. Fix a bug or improve the tracker backend behavior.
+2. Add member edit/delete support in the dashboard.
+3. Improve the UI design or styling in `static/style.css`.
+4. Enhance the JavaScript interaction in `static/app.js`.
+5. Update documentation, the README, or usage instructions.
 
-1. Create a new branch:
+Contribution workflow:
+1. Create a new branch for each contribution:
    ```powershell
    git checkout -b feature/<short-description>
    ```
-2. Make a small, focused change.
-3. Stage the change:
+2. Make one small, focused change for that contribution.
+3. Stage only the changed files:
    ```powershell
-   git add .
+   git add <changed-file>
    ```
 4. Commit with a clear message:
    ```powershell
@@ -64,7 +66,9 @@ Contribution ideas:
    ```powershell
    git push origin feature/<short-description>
    ```
-6. Open a pull request on GitHub and describe the change clearly.
+6. Open a pull request for that one contribution.
+
+Repeat this process for each of the five separate contributions.
 
 ## Push Changes to GitHub
 After making each change and committing it, push your branch separately so each update is tracked one by one:
