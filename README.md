@@ -46,6 +46,7 @@ Contribution ideas:
 - Add new features or extend existing functionality.
 - Improve UI design, styling, or user experience.
 - Update documentation, README, or usage instructions.
+- Add a short contribution checklist or PR description.
 
 1. Create a new branch:
    ```powershell
