@@ -42,11 +42,11 @@ Users can:
 You can make five separate contributions to this repository by creating five focused pull requests. Keep each contribution small and easy to review.
 
 Contribution ideas:
-1. Fix a bug or improve the tracker backend behavior.
+1. Fix bugs and improve core tracker behavior.
 2. Add member edit/delete support in the dashboard.
 3. Improve the UI design or styling in `static/style.css`.
 4. Enhance the JavaScript interaction in `static/app.js`.
-5. Update documentation, the README, or usage instructions.
+5. Add a short contribution checklist or PR description.
 
 Contribution workflow:
 1. Create a new branch for each contribution:
