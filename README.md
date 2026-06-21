@@ -52,6 +52,10 @@ Example contributions you can make:
 - improve availability toggle animations
 - add search or filter support in the dashboard
 - add an activity export or reporting view
+- improve accessibility for keyboard and screen reader users
+- add tests for backend APIs or frontend behavior
+- optimize performance and reduce frontend load time
+- add support for multiple teams or roles
 
 1. Create a new branch:
    ```powershell
