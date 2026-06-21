@@ -56,6 +56,7 @@ Example contributions you can make:
 - add tests for backend APIs or frontend behavior
 - optimize performance and reduce frontend load time
 - add support for multiple teams or roles
+- add mobile-responsive layout support for smaller screens
 
 1. Create a new branch:
    ```powershell
